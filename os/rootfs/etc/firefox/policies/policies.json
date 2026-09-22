@@ -1,0 +1,26 @@
+{
+  "policies": {
+    "Homepage": {
+      "URL": "https://sai.internal/",
+      "StartPage": "homepage",
+      "Locked": false
+    },
+    "ManagedBookmarks": [
+      { "toplevel_name": "Sai" },
+      { "name": "Home page", "url": "https://sai.internal/" }
+    ],
+    "DisableTelemetry": true,
+    "DisablePocket": true,
+    "DisableFirefoxStudies": true,
+    "DontCheckDefaultBrowser": true,
+    "NoDefaultBookmarks": true,
+    "OverrideFirstRunPage": "",
+    "OverridePostUpdatePage": "",
+    "DisableFeedbackCommands": true,
+    "EnableTrackingProtection": {
+      "Value": true,
+      "Cryptomining": true,
+      "Fingerprinting": true
+    }
+  }
+}

@@ -1,0 +1,2 @@
+# Sai: fcitx5 as the default input method for im-config
+run_im fcitx5

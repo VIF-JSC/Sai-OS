@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=Application
+Name=Fcitx 5
+Name[vi]=Bộ gõ Fcitx 5
+Comment=Input method framework
+Comment[vi]=Khung bộ gõ đa ngôn ngữ
+Exec=fcitx5 -d --replace
+Icon=org.fcitx.Fcitx5
+Terminal=false
+NoDisplay=true
+X-GNOME-Autostart-Phase=InputMethods
+X-GNOME-Provides=inputmethod
+OnlyShowIn=X-Cinnamon;GNOME;MATE;XFCE;LXQt;KDE;

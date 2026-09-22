@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Sai Install Mode
+Comment=Launch the installer when booted with sai.install=1
+Exec=/usr/bin/sai-install-launcher
+Terminal=false
+NoDisplay=true
+X-GNOME-Autostart-Delay=3
+OnlyShowIn=X-Cinnamon;

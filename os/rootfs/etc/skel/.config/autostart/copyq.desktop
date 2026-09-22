@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=CopyQ
+Name[vi]=CopyQ
+Comment=Clipboard manager
+Comment[vi]=Quản lý clipboard
+Exec=copyq
+Icon=copyq
+Terminal=false
+X-GNOME-Autostart-Delay=3

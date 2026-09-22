@@ -1,0 +1,23 @@
+# Default applications per file type for new Sai users.
+[Default Applications]
+# Web → Firefox
+text/html=firefox.desktop
+x-scheme-handler/http=firefox.desktop
+x-scheme-handler/https=firefox.desktop
+x-scheme-handler/about=firefox.desktop
+x-scheme-handler/unknown=firefox.desktop
+# Documents + images → Mint viewers
+application/pdf=xreader.desktop
+image/jpeg=xviewer.desktop
+image/png=xviewer.desktop
+image/gif=xviewer.desktop
+image/svg+xml=xviewer.desktop
+text/plain=xed.desktop
+# Media → Celluloid
+video/mp4=celluloid.desktop
+video/x-matroska=celluloid.desktop
+video/webm=celluloid.desktop
+audio/mpeg=celluloid.desktop
+# Archives → open with the file manager
+application/zip=nemo.desktop
+application/x-tar=nemo.desktop

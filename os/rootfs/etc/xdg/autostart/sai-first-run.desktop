@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Sai First Run
+Name[vi]=Chào mừng Sai lần đầu
+Comment=Open the welcome app on first login
+Comment[vi]=Mở app chào mừng ở lần đăng nhập đầu tiên
+Exec=/usr/bin/sai-first-run
+Terminal=false
+NoDisplay=true
+X-GNOME-Autostart-Delay=8
+AutostartCondition=unless-exists .config/sai-welcome-seen
+OnlyShowIn=X-Cinnamon;

@@ -1,0 +1,29 @@
+#!/bin/sh
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Make sure the Lotus input method is ready on every login (notably in the live
+# session, where the package postinst cannot enable the service for the temporary user).
+set -u
+
+ME="${USER:-$(id -un)}"
+
+# The Lotus server runs per user via systemd
+if command -v systemctl >/dev/null 2>&1; then
+    systemctl enable --now "fcitx5-lotus-server@${ME}.service" >/dev/null 2>&1 || true
+fi
+
+# IBus from the stock session (if it started) would fight fcitx5 for key events
+killall ibus-daemon >/dev/null 2>&1 || true
+
+# Apply the Sai Lotus defaults (Telex, Lotus preselected as the input method)
+mkdir -p "$HOME/.config/fcitx5/conf" "$HOME/.config/environment.d"
+[ -d "$HOME/.config/fcitx5/profile" ] && rm -rf "$HOME/.config/fcitx5/profile"
+cp -f /etc/skel/.config/fcitx5/profile "$HOME/.config/fcitx5/profile" 2>/dev/null || true
+cp -f /etc/skel/.config/fcitx5/conf/lotus.conf "$HOME/.config/fcitx5/conf/" 2>/dev/null || true
+[ -f "$HOME/.config/environment.d/90-fcitx5-lotus.conf" ] || \
+    cp -f /etc/skel/.config/environment.d/90-fcitx5-lotus.conf \
+          "$HOME/.config/environment.d/" 2>/dev/null || true
+
+# Start fcitx5 if the desktop autostart has not done so yet
+if command -v fcitx5 >/dev/null 2>&1 && ! pgrep -u "$(id -u)" -x fcitx5 >/dev/null 2>&1; then
+    fcitx5 -d --replace >/dev/null 2>&1 || true
+fi

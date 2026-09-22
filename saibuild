@@ -1,0 +1,139 @@
+#!/bin/bash
+# SPDX-License-Identifier: GPL-3.0-or-later
+# saibuild — build the Sai ISO from a stock LMDE (Debian) ISO.
+#
+#   sudo ./saibuild [command] [options] [path/to/lmde.iso]
+#
+# Commands:
+#   all          (default) unpack → boot → provision → pack → clean up
+#   unpack       Extract the base ISO into build/ and keep it for editing
+#   boot         Brand the bootloader in build/iso-tree
+#   overlay      Apply os/rootfs/ onto the rootfs only
+#   provision    Install packages + overlay + run os/provision.d/
+#   pack         Compress squashfs + create the ISO, keep the workspace
+#   image        Rebuild only the ISO file from build/iso-tree
+#   quick        Validated rootfs → overlay + pack; otherwise provision + pack
+#   shell        Enter the rootfs chroot for manual testing
+#   clean        Remove the workspace (keep cache + base ISO)
+#   clean-all    Remove the cache as well
+#
+# Options:
+#   --release      Compress with xz (smaller ISO, slower build) instead of lz4
+#   --debug-boot   Drop quiet/splash to see the kernel log at boot
+set -euo pipefail
+
+BUILD_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$BUILD_ROOT"
+
+source builder/env.sh
+source builder/lib.sh
+source builder/iso.sh
+source builder/rootfs.sh
+
+CMD="all"
+ISO_ARG=""
+DEBUG_BOOT=0
+
+for arg in "$@"; do
+    case "$arg" in
+        --release)    use_release_compression ;;
+        --debug-boot) DEBUG_BOOT=1 ;;
+        --help|-h|help)
+            # Print the header comment block (minus the shebang) as help text
+            awk 'NR==1{next} /^#/{sub(/^# ?/,""); print; next} {exit}' "$0"
+            exit 0 ;;
+        all|unpack|boot|overlay|provision|pack|image|quick|shell|clean|clean-all)
+            CMD="$arg" ;;
+        -*) fail "Unknown option: $arg (see: ./saibuild help)" ;;
+        *)  ISO_ARG="$arg" ;;
+    esac
+done
+
+# Cleanup commands do not need the base ISO
+case "$CMD" in
+    clean)
+        require_root
+        drop_workspace
+        done_ "Workspace removed (cache + base ISO kept)."
+        exit 0 ;;
+    clean-all)
+        require_root
+        drop_workspace
+        rm -rf "$WORK/.cache" Sai-*.iso ./*.log
+        done_ "Workspace + cache removed."
+        exit 0 ;;
+esac
+
+require_root
+require_host_tools
+
+# On a failed build: unmount to protect the host, keep the workspace for debugging
+BUILD_DONE=0
+on_exit() {
+    [ "$BUILD_DONE" = "1" ] && return 0
+    echo ""
+    note "Build stopped early — unmounting safely, workspace kept for inspection."
+    leave_rootfs
+    umount "$WORK/mnt" 2>/dev/null || true
+}
+trap on_exit EXIT
+
+echo ""
+say "${SAI_NAME} ${SAI_VERSION} ← LMDE ${BASE_VERSION} ${BASE_EDITION} (Debian 13)"
+echo ""
+
+case "$CMD" in
+    all)
+        locate_base_iso "$ISO_ARG"
+        iso_unpack
+        iso_brand_boot
+        rootfs_provision
+        iso_pack
+        drop_workspace
+        show_result
+        ;;
+    unpack)
+        locate_base_iso "$ISO_ARG"
+        iso_unpack
+        ;;
+    boot)
+        workspace_ready || fail "No workspace. Run: sudo ./saibuild unpack"
+        iso_brand_boot
+        ;;
+    overlay)
+        rootfs_apply_overlay
+        leave_rootfs
+        ;;
+    provision)
+        rootfs_provision
+        ;;
+    pack)
+        iso_pack
+        show_result
+        ;;
+    image)
+        iso_pack_image
+        show_result
+        ;;
+    quick)
+        if ! workspace_ready; then
+            locate_base_iso "$ISO_ARG"
+            iso_unpack
+        fi
+        iso_brand_boot
+        if rootfs_is_validated; then
+            rootfs_apply_overlay
+            leave_rootfs
+        else
+            note "Rootfs not fully provisioned — provisioning before pack."
+            rootfs_provision
+        fi
+        iso_pack
+        show_result
+        ;;
+    shell)
+        rootfs_shell
+        ;;
+esac
+
+BUILD_DONE=1

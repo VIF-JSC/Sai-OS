@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Sai Input Setup
+Name[vi]=Thiết lập bộ gõ Sai
+Comment=Ensure Lotus input method is ready for this session
+Comment[vi]=Đảm bảo bộ gõ Lotus sẵn sàng cho phiên làm việc
+Exec=/usr/local/bin/sai-input-setup
+Terminal=false
+NoDisplay=true
+X-GNOME-Autostart-Phase=InputMethods
+X-GNOME-Provides=inputmethod
+OnlyShowIn=X-Cinnamon;GNOME;MATE;XFCE;LXQt;KDE;

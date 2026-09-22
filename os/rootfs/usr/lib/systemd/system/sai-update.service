@@ -1,0 +1,11 @@
+[Unit]
+Description=Sai update (apt + migrations)
+Documentation=man:sai-update
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/sai-update run
+Nice=10
+IOSchedulingClass=idle

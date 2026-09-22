@@ -1,0 +1,110 @@
+#!/bin/bash
+# SPDX-License-Identifier: GPL-3.0-or-later
+# sai-update — centralized updates for Sai machines: apt + run-once migrations.
+#
+#   sai-update            run an update (apt + migrations)
+#   sai-update status     show the last run
+#   sai-update list       list migrations and their state
+#
+# How it works:
+#   1. apt update + full-upgrade  — includes the Sai repo if enabled (etc/apt/.../sai.sources)
+#   2. migrations                 — scripts /usr/share/sai/migrations/NN-name.sh, run exactly
+#      once each in filename order; completed ones are recorded in a ledger.
+#      New migrations are shipped as packages (deb) from the Sai repo.
+set -u
+
+CONF=/etc/sai/update.conf
+MIGRATIONS_DIR=/usr/share/sai/migrations
+STATE_DIR=/var/lib/sai
+LEDGER="$STATE_DIR/migrations.done"
+LOG=/var/log/sai-update.log
+LOCK=/run/sai-update.lock
+
+# shellcheck source=/dev/null
+[ -f "$CONF" ] && . "$CONF"
+UPDATE_ENABLED="${UPDATE_ENABLED:-1}"
+UPDATE_APT="${UPDATE_APT:-1}"
+
+log() { printf '%s %s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$*" | tee -a "$LOG"; }
+
+list_migrations() {
+    local m name
+    for m in "$MIGRATIONS_DIR"/*.sh; do
+        [ -f "$m" ] || continue
+        name=$(basename "$m")
+        if grep -qxF "$name" "$LEDGER" 2>/dev/null; then
+            echo "  [done]    $name"
+        else
+            echo "  [pending] $name"
+        fi
+    done
+}
+
+case "${1:-run}" in
+    status)
+        echo "Config:   UPDATE_ENABLED=$UPDATE_ENABLED UPDATE_APT=$UPDATE_APT"
+        echo "Last run:"
+        tail -n 5 "$LOG" 2>/dev/null || echo "  (never run)"
+        exit 0 ;;
+    list)
+        list_migrations
+        exit 0 ;;
+    run) ;;
+    *)
+        sed -n '3,13p' "$0" | sed 's/^# \{0,1\}//'
+        exit 2 ;;
+esac
+
+[ "$(id -u)" -eq 0 ] || { echo "Must run as root." >&2; exit 1; }
+[ "$UPDATE_ENABLED" = "1" ] || { log "Skipped: UPDATE_ENABLED=0"; exit 0; }
+
+exec 9>"$LOCK"
+flock -n 9 || { log "Skipped: another update is already running."; exit 0; }
+
+mkdir -p "$STATE_DIR"
+export DEBIAN_FRONTEND=noninteractive
+rc=0
+
+# --- 0. Snapshot before changing anything (rollback if the update breaks) ---
+# Requires Timeshift to be configured (Mint ships the app); skipped otherwise.
+if [ "${UPDATE_SNAPSHOT:-1}" = "1" ] && command -v timeshift >/dev/null 2>&1; then
+    if timeshift --create --comments "sai-update automatic" --scripted >>"$LOG" 2>&1; then
+        log "Timeshift snapshot created."
+    else
+        log "WARN: snapshot failed (Timeshift not configured?) — continuing."
+    fi
+fi
+
+# --- 1. Packages ---
+if [ "$UPDATE_APT" = "1" ]; then
+    log "apt update..."
+    if apt-get -o DPkg::Lock::Timeout=600 update >>"$LOG" 2>&1; then
+        log "apt full-upgrade..."
+        apt-get -o DPkg::Lock::Timeout=600 \
+                -o Dpkg::Options::=--force-confdef \
+                -o Dpkg::Options::=--force-confold \
+                full-upgrade -y >>"$LOG" 2>&1 || { log "WARN: full-upgrade failed"; rc=1; }
+    else
+        log "WARN: apt update failed (network/repo?)"
+        rc=1
+    fi
+fi
+
+# --- 2. Migrations ---
+for m in "$MIGRATIONS_DIR"/*.sh; do
+    [ -f "$m" ] || continue
+    name=$(basename "$m")
+    grep -qxF "$name" "$LEDGER" 2>/dev/null && continue
+    log "migration: $name"
+    if bash "$m" >>"$LOG" 2>&1; then
+        echo "$name" >> "$LEDGER"
+        log "migration OK: $name"
+    else
+        log "ERROR: migration failed: $name (will retry next run)"
+        rc=1
+        break   # migrations are ordered — never skip past a failed one
+    fi
+done
+
+log "Finished (rc=$rc)."
+exit "$rc"

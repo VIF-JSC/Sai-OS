@@ -1,0 +1,14 @@
+services:
+  builder:
+    build: .
+    working_dir: /sai
+    # privileged is required to loop-mount the ISO and bind-mount the chroot
+    privileged: true
+    tty: true
+    stdin_open: true
+    environment:
+      CI: "1"
+      APT_LOCK_TIMEOUT: "600"
+    volumes:
+      - .:/sai
+      - /dev:/dev

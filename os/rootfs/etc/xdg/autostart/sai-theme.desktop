@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Sai Theme Applier
+Comment=Apply custom themes on first boot
+Exec=/usr/bin/sai-theme-apply
+AutostartCondition=unless-exists .config/sai-theme-applied
+X-GNOME-Autostart-Phase=Desktop
+NoDisplay=true

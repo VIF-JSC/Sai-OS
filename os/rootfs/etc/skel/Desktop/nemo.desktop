@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Files
+Name[vi]=Tệp
+Comment=Browse files and folders
+Comment[vi]=Duyệt file và thư mục
+Exec=nemo
+Icon=folder
+Terminal=false
+Categories=GNOME;GTK;Utility;Core;

@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Flameshot
+Name[vi]=Flameshot
+Comment=Screenshots (Print Screen)
+Comment[vi]=Chụp màn hình (Print Screen)
+Exec=/usr/bin/flameshot
+Icon=flameshot
+Terminal=false

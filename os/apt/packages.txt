@@ -1,0 +1,21 @@
+# Packages installed ON TOP of stock LMDE (one per line, # starts a comment).
+# LMDE already ships: wifi/ethernet/bluetooth drivers, firmware, LightDM + Slick Greeter.
+
+# Screenshots + clipboard manager for office work
+flameshot
+copyq
+
+# Laptop power saving
+tlp
+
+# Compressed swap in RAM (configured in /etc/systemd/zram-generator.conf)
+systemd-zram-generator
+
+# Fonts compatible with Microsoft documents (EULA preseeded at build time)
+ttf-mscorefonts-installer
+
+# "Task Manager" for Ctrl+Shift+Esc
+gnome-system-monitor
+
+# Vietnamese: on Debian/LMDE the Cinnamon translations already ship in
+# cinnamon-l10n (installed with the desktop); no Ubuntu-style language-pack-* needed.

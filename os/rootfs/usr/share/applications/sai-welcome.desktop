@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Welcome to Sai
+Name[vi]=Chào mừng đến Sai
+Comment=Things worth knowing about this computer
+Comment[vi]=Những điều cần biết về máy tính này
+Exec=firefox --new-window /usr/share/sai/welcome/index.html
+Icon=sai-logo
+Terminal=false
+Categories=System;Utility;

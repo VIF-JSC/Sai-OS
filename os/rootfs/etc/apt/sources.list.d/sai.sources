@@ -1,0 +1,9 @@
+# Sai APT repository: delivers updates + migrations to installed machines.
+# The values below are PLACEHOLDERS (see docs/REBRAND.md section 7): set up a repo
+# (aptly/reprepro), change URIs, put the public key at Signed-By, then set Enabled: yes.
+Types: deb
+URIs: https://ota.sai.internal/apt
+Suites: trixie
+Components: main
+Signed-By: /usr/share/keyrings/sai-archive-keyring.gpg
+Enabled: no

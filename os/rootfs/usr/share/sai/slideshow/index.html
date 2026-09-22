@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Sai</title>
+<style>
+    :root {
+        --brand: #0F4FD6;
+        --brand-deep: #0A2C66;
+        --ink: #1e2936;
+        --muted: #5b6b7c;
+        --paper: #f4f7fb;
+        --card: #ffffff;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; overflow: hidden; }
+    body {
+        font-family: 'Be Vietnam Pro', 'Ubuntu', sans-serif;
+        background: var(--paper);
+        color: var(--ink);
+    }
+
+    .deck { position: relative; width: 100%; height: 100%; }
+    .card {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 40px 56px 56px;
+        opacity: 0;
+        transition: opacity .5s ease;
+        pointer-events: none;
+    }
+    .card.on { opacity: 1; pointer-events: auto; }
+
+    .kicker {
+        display: inline-block;
+        align-self: flex-start;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: .12em;
+        text-transform: uppercase;
+        color: var(--brand);
+        border: 1px solid var(--brand);
+        border-radius: 999px;
+        padding: 4px 12px;
+        margin-bottom: 16px;
+    }
+    h1 { font-size: 30px; line-height: 1.2; margin-bottom: 10px; }
+    h1 em { font-style: normal; color: var(--brand); }
+    .lead { font-size: 15px; color: var(--muted); line-height: 1.55; max-width: 520px; }
+
+    .points { margin-top: 22px; display: grid; gap: 10px; max-width: 540px; }
+    .point {
+        background: var(--card);
+        border: 1px solid #e2e8f1;
+        border-left: 4px solid var(--brand);
+        border-radius: 8px;
+        padding: 10px 14px;
+        font-size: 13.5px;
+        line-height: 1.45;
+    }
+    .point b { color: var(--brand); }
+
+    .dots {
+        position: absolute;
+        bottom: 18px;
+        left: 0; right: 0;
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+    }
+    .dots i {
+        width: 8px; height: 8px;
+        border-radius: 50%;
+        background: #c3cedd;
+        transition: background .3s, transform .3s;
+    }
+    .dots i.on { background: var(--brand); transform: scale(1.25); }
+
+    .brand-mark {
+        position: absolute;
+        top: 22px; right: 28px;
+        font-size: 13px;
+        font-weight: 800;
+        letter-spacing: .08em;
+        color: var(--brand);
+    }
+</style>
+</head>
+<body>
+<div class="deck">
+
+    <section class="card on">
+        <span class="kicker">Installing</span>
+        <h1>Your computer is being set up with <em>Sai</em></h1>
+        <p class="lead">Sai is an operating system for office work,
+            built on Debian (LMDE). While you wait, the next slides show what
+            comes ready out of the box.</p>
+        <div class="points">
+            <div class="point">Ready the moment it's installed — apps and settings come preconfigured.</div>
+            <div class="point">A familiar, Windows-like desktop. Vietnamese fully preinstalled — switch anytime.</div>
+        </div>
+    </section>
+
+    <section class="card">
+        <span class="kicker">Work</span>
+        <h1>Office tools, <em>included</em></h1>
+        <p class="lead">Nothing to install before your first day of work.</p>
+        <div class="points">
+            <div class="point"><b>WPS Office</b> — documents, spreadsheets, presentations; opens Word/Excel/PowerPoint files well.</div>
+            <div class="point"><b>Firefox</b> — web browser.</div>
+            <div class="point"><b>Flameshot</b> screenshots (Print Screen) · <b>CopyQ</b> clipboard manager.</div>
+        </div>
+    </section>
+
+    <section class="card">
+        <span class="kicker">Tiếng Việt</span>
+        <h1>Vietnamese typing, <em>ready at login</em></h1>
+        <p class="lead">The input method is preinstalled and enabled (Telex) — no setup needed.</p>
+        <div class="points">
+            <div class="point">Press the <b>`</b> key (left of 1) to toggle Vietnamese typing.</div>
+            <div class="point">Prefer a Vietnamese interface? Menu → Languages → Tiếng Việt — everything is preinstalled.</div>
+        </div>
+    </section>
+
+    <section class="card">
+        <span class="kicker">Maintenance</span>
+        <h1>Updates itself — <em>hands off</em></h1>
+        <p class="lead">The system receives software and configuration updates automatically every day.</p>
+        <div class="points">
+            <div class="point">Updates run in the background and never interrupt your work.</div>
+            <div class="point">Something wrong? Contact the IT team — no need to fix things yourself.</div>
+        </div>
+    </section>
+
+</div>
+<div class="dots"></div>
+<div class="brand-mark">Sai</div>
+
+<script>
+(function () {
+    var cards = document.querySelectorAll('.card');
+    var dotsBox = document.querySelector('.dots');
+    var at = 0;
+
+    cards.forEach(function (_, i) {
+        var d = document.createElement('i');
+        if (i === 0) d.className = 'on';
+        dotsBox.appendChild(d);
+    });
+    var dots = dotsBox.children;
+
+    function show(n) {
+        cards[at].classList.remove('on');
+        dots[at].classList.remove('on');
+        at = (n + cards.length) % cards.length;
+        cards[at].classList.add('on');
+        dots[at].classList.add('on');
+    }
+
+    var timer = setInterval(function () { show(at + 1); }, 8000);
+    document.addEventListener('click', function () {
+        clearInterval(timer);
+        show(at + 1);
+        timer = setInterval(function () { show(at + 1); }, 8000);
+    });
+})();
+</script>
+</body>
+</html>

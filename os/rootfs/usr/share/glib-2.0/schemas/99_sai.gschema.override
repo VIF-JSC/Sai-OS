@@ -1,0 +1,116 @@
+# Sai system defaults (schema override; users can still change them in Settings).
+# Split of responsibilities: panel layout and theme live in /etc/dconf/db/local.d/00-sai-desktop;
+# this file holds what dconf does not cover: login screen, plain GTK apps, Nemo, power, keybindings.
+
+# --- Login screen (Slick Greeter) ---
+[x.dm.slick-greeter]
+theme-name='Cinnamon-Delight'
+icon-theme-name='Win11'
+cursor-theme-name='Bibata-Modern-Classic'
+cursor-theme-size=24
+font-name='Be Vietnam Pro 11'
+background='/usr/share/backgrounds/sai/default.png'
+draw-user-backgrounds=false
+
+# --- Desktop background (solid color shown before the image loads) ---
+[org.cinnamon.desktop.background]
+picture-uri='file:///usr/share/backgrounds/sai/default.png'
+picture-options='zoom'
+color-shading-type='solid'
+primary-color='#0A1226'
+secondary-color='#0F4FD6'
+
+[org.gnome.desktop.background]
+picture-uri='file:///usr/share/backgrounds/sai/default.png'
+picture-options='zoom'
+color-shading-type='solid'
+primary-color='#0A1226'
+secondary-color='#0F4FD6'
+show-desktop-icons=false
+
+# --- Fonts for plain GNOME/GTK apps ---
+[org.gnome.desktop.interface]
+gtk-theme='Cinnamon-Delight'
+icon-theme='Win11'
+cursor-theme='Bibata-Modern-Classic'
+font-name='Be Vietnam Pro 10'
+document-font-name='Be Vietnam Pro 10'
+monospace-font-name='DejaVu Sans Mono 10'
+
+[org.gnome.desktop.wm.preferences]
+theme='Cinnamon-Delight'
+titlebar-font='Be Vietnam Pro Bold 10'
+titlebar-uses-system-font=false
+button-layout=':minimize,maximize,close'
+
+[org.cinnamon.desktop.wm.preferences]
+titlebar-font='Be Vietnam Pro Bold 10'
+titlebar-uses-system-font=false
+button-layout=':minimize,maximize,close'
+
+# --- Nemo file manager ---
+[org.nemo.desktop]
+computer-icon-visible=false
+home-icon-visible=false
+trash-icon-visible=false
+network-icon-visible=false
+volumes-visible=true
+font='Be Vietnam Pro 10'
+
+[org.nemo.preferences]
+show-hidden-files=false
+default-folder-viewer='icon-view'
+
+# --- Touchpad + power (sensible defaults for office laptops) ---
+[org.cinnamon.desktop.peripherals.touchpad]
+tap-to-click=true
+natural-scroll=true
+
+[org.cinnamon.settings-daemon.plugins.power]
+sleep-inactive-ac-timeout=0
+sleep-inactive-battery-timeout=900
+lid-close-ac-action='nothing'
+lid-close-battery-action='suspend'
+
+# --- Lock the screen after 5 minutes ---
+[org.cinnamon.desktop.screensaver]
+lock-enabled=true
+lock-delay=uint32 300
+font-time='Be Vietnam Pro 64'
+font-date='Be Vietnam Pro 24'
+font-message='Be Vietnam Pro 14'
+
+# --- Bluetooth: hide the blueman tray icon (the system applet covers it) ---
+[org.blueman.general]
+plugin-list=['!ShowConnected', '!StatusIcon']
+
+# --- Keybindings familiar to Windows users ---
+[org.cinnamon.desktop.keybindings.media-keys]
+# Print Screen goes to Flameshot (like Snipping Tool)
+screenshot=@as []
+screenshot-clip=@as []
+window-screenshot=@as []
+window-screenshot-clip=@as []
+area-screenshot=@as []
+area-screenshot-clip=@as []
+# Super+E opens the file manager, like Windows+E
+home=['<Super>e']
+
+[org.cinnamon.desktop.keybindings]
+custom-list=['custom0', 'custom1', 'custom2']
+
+[org.cinnamon.desktop.keybindings.custom-keybinding:/org/cinnamon/desktop/keybindings/custom-keybindings/custom0/]
+name='Screenshot'
+command='flameshot gui'
+binding=['Print']
+
+[org.cinnamon.desktop.keybindings.custom-keybinding:/org/cinnamon/desktop/keybindings/custom-keybindings/custom1/]
+name='Screenshot (Super+Shift+S)'
+command='flameshot gui'
+binding=['<Super><Shift>s']
+
+# Ctrl+Shift+Esc opens the "Task Manager", like Windows
+[org.cinnamon.desktop.keybindings.custom-keybinding:/org/cinnamon/desktop/keybindings/custom-keybindings/custom2/]
+name='Task Manager'
+command='gnome-system-monitor'
+binding=['<Primary><Shift>Escape']

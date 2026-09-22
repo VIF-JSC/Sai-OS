@@ -1,0 +1,33 @@
+#!/bin/bash
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Pin the Sai look for a new user on first login.
+# (The system defaults in dconf are already correct; this only re-applies keys that
+# the Cinnamon session may change during its own first-run initialization.)
+
+STAMP="$HOME/.config/sai-theme-applied"
+[ -f "$STAMP" ] && exit 0
+
+set_key() { gsettings set "$@" 2>/dev/null || true; }
+
+# Theme + fonts
+set_key org.cinnamon.theme name 'Cinnamon-Delight'
+set_key org.cinnamon.desktop.interface gtk-theme 'Cinnamon-Delight'
+set_key org.cinnamon.desktop.interface icon-theme 'Win11'
+set_key org.cinnamon.desktop.interface cursor-theme 'Bibata-Modern-Classic'
+set_key org.cinnamon.desktop.interface font-name 'Be Vietnam Pro 10'
+set_key org.cinnamon.desktop.wm.preferences titlebar-font 'Be Vietnam Pro Bold 10'
+
+# Wallpaper
+set_key org.cinnamon.desktop.background picture-uri 'file:///usr/share/backgrounds/sai/default.png'
+set_key org.gnome.desktop.background picture-uri 'file:///usr/share/backgrounds/sai/default.png'
+
+# Empty desktop (no icons), window buttons on the right as on Windows
+set_key org.nemo.desktop computer-icon-visible false
+set_key org.nemo.desktop home-icon-visible false
+set_key org.nemo.desktop trash-icon-visible false
+set_key org.nemo.desktop network-icon-visible false
+set_key org.nemo.desktop volumes-visible false
+set_key org.cinnamon.desktop.wm.preferences button-layout ':minimize,maximize,close'
+
+mkdir -p "$(dirname "$STAMP")"
+touch "$STAMP"

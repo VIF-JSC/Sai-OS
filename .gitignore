@@ -1,0 +1,25 @@
+# Brand source images (large, used locally by brand/apply.py)
+brand/tmp/
+
+# Build output
+build/
+Sai-*.iso
+SHA256SUMS
+*.log
+
+# Base LMDE ISO (~3 GB, downloaded at build time)
+lmde-*.iso
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Local tooling
+.claude
+
+# Other packaged output
+dist/

@@ -1,0 +1,14 @@
+#!/bin/sh
+# SPDX-License-Identifier: GPL-3.0-or-later
+# The "Install Sai (Install to disk)" boot entry adds the token sai.install=1 to the
+# kernel cmdline. This script runs when the live session starts: if the token is
+# present it opens the installer (LMDE's live-installer) directly, replacing the
+# only-ubiquity mechanism that exists only on Ubuntu-based images.
+grep -qw 'sai.install=1' /proc/cmdline || exit 0
+
+# Let the desktop settle before starting the installer
+sleep 4
+gtk-launch live-installer 2>/dev/null && exit 0
+# Fallback: call the binary directly if there is no desktop entry
+command -v live-installer >/dev/null && exec sudo live-installer
+exit 0

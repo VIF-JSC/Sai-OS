@@ -1,0 +1,14 @@
+#!/bin/sh
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Open the welcome page in Firefox exactly once, on each user's first login.
+# Stay silent in install mode (booted with sai.install=1) so the installer is not
+# covered. Users can reopen it from the menu or the Desktop icon.
+grep -qw 'sai.install=1' /proc/cmdline 2>/dev/null && exit 0
+STAMP="$HOME/.config/sai-welcome-seen"
+[ -f "$STAMP" ] && exit 0
+PAGE=/usr/share/sai/welcome/index.html
+[ -f "$PAGE" ] || exit 0
+command -v firefox >/dev/null || exit 0
+mkdir -p "$HOME/.config"
+touch "$STAMP"
+exec firefox --new-window "file://$PAGE"

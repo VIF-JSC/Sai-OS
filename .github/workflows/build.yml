@@ -1,0 +1,107 @@
+name: Sai ISO
+
+on:
+  push:
+    # public-release: pre-merge branch, builds the ISO on every push for testing.
+    # Remove it from this list once merged into main.
+    branches: [main, public-release]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  # Runs on every push/PR: fast, needs neither root nor the base ISO.
+  test:
+    name: Static tests
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: shellcheck
+        run: |
+          sudo apt-get install -y shellcheck
+          shellcheck -S warning -x saibuild builder/*.sh os/provision.d/*.sh \
+            os/rootfs/usr/bin/sai-update os/rootfs/usr/bin/sai-theme-apply \
+            os/rootfs/usr/bin/sai-first-run os/rootfs/usr/bin/sai-install-launcher \
+            os/rootfs/usr/local/bin/sai-input-setup
+
+      - name: unittest
+        run: python3 -m unittest discover -s tests -v
+
+  # Real ISO build: only on main, v* tags, or manual dispatch (PRs skip it to save runner time).
+  iso:
+    name: Build ISO
+    needs: test
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write   # create a GitHub Release on tag push
+    steps:
+      - uses: actions/checkout@v4
+
+      # The runner has ~14 GB free; the remaster needs a 3 GB base ISO + ~10 GB rootfs + 3 GB output.
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc \
+                      /opt/hostedtoolcache /usr/local/.ghcup /usr/share/swift \
+                      /usr/local/share/boost /usr/lib/jvm /usr/local/share/powershell
+          sudo docker system prune -af >/dev/null 2>&1 || true
+          sudo apt-get clean
+          df -h /
+
+      - name: Install build tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y squashfs-tools xorriso rsync wget isolinux syslinux-utils
+
+      - name: Cache the base LMDE ISO
+        uses: actions/cache@v4
+        with:
+          path: lmde-*.iso
+          key: lmde-7-cinnamon
+
+      - name: Tag must match SAI_VERSION
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          source builder/env.sh
+          [ "v${SAI_VERSION}" = "${GITHUB_REF_NAME}" ] || {
+            echo "::error::Tag ${GITHUB_REF_NAME} does not match SAI_VERSION=${SAI_VERSION} in builder/env.sh"
+            exit 1
+          }
+
+      # Always use xz on CI: an lz4 squashfs (~5 GB) does not fit on the runner disk.
+      - name: Build ISO
+        run: sudo -E ./saibuild all --release
+
+      - name: Disk usage after build
+        if: always()
+        run: df -h /
+
+      - name: Checksum
+        run: sha256sum Sai-*.iso | tee SHA256SUMS
+
+      - name: Upload ISO (artifact, 7 days)
+        uses: actions/upload-artifact@v4
+        with:
+          name: sai-iso
+          path: |
+            Sai-*.iso
+            SHA256SUMS
+          retention-days: 7
+
+      # GitHub Releases cap files at ~2 GB, so only SHA256SUMS is attached; the ISO
+      # comes from this run's artifact. To publish the ISO, upload it to your own
+      # mirror/storage and link it from the release notes.
+      - name: GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: SHA256SUMS
+          generate_release_notes: true
