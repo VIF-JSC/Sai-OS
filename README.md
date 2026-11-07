@@ -101,9 +101,20 @@ docker compose run builder
 ./saibuild
 ```
 
+### Cloud Image
+
+The same provisioned rootfs can also be exported as a cloud VM disk (raw by default) with cloud-init, automatic root-disk growth, paravirtual drivers for every major hypervisor, guest agents, BIOS + UEFI boot, and SSH/xrdp remote access:
+
+```bash
+sudo ./saibuild cloud                               # → Sai-<ver>-cloud-amd64.raw
+sudo CLOUD_FORMATS=raw,qcow2,vhd,gce ./saibuild cloud
+```
+
+See [docs/CLOUD.md](docs/CLOUD.md) for settings, local testing, and upload commands for OpenStack, AWS, Google Cloud, Azure, VMware, and Proxmox.
+
 ### Continuous Integration (CI)
 
-Every pull request and commit to `main` runs automated static checks (`shellcheck` and Python unit tests). Pushes to `main` or version tags (`v*`) build the production ISO, upload it as a 7-day workflow artifact, and publish GitHub Releases on tags.
+Every pull request and commit to `main` runs automated static checks (`shellcheck` and Python unit tests). Pushes to `main` or version tags (`v*`) build the production ISO and the cloud image (raw, zstd-compressed as `.raw.zst`), upload them as 7-day workflow artifacts, and publish GitHub Releases on tags.
 
 ---
 
@@ -117,18 +128,21 @@ Sai-OS/
 │   ├── env.sh                # Build parameters and default configuration
 │   ├── iso.sh                # ISO tree operations: extract, brand bootloader, pack
 │   ├── rootfs.sh             # Chroot operations: overlay, package install, validation
+│   ├── cloud.sh              # Cloud image: disk layout, bootloader, export formats
 │   └── inspect-iso.sh        # Bootloader and ISO artifact verification script
 ├── os/
 │   ├── apt/packages.txt      # Enterprise and office packages added to base LMDE
 │   ├── rootfs/               # Files overlaid on target filesystem (configs, updates)
-│   └── provision.d/          # Ordered chroot provisioning scripts (10- to 90-)
+│   ├── provision.d/          # Ordered chroot provisioning scripts (10- to 90-)
+│   └── cloud/                # Cloud-only packages, overlay, and provisioning
 ├── brand/
 │   ├── apply.py              # Generation script for logos, themes, and splash art
 │   ├── logo/                 # Vector brand assets
 │   └── Wallpaper 4K/         # Branded desktop backgrounds
 ├── tests/                    # Automated regression tests (syntax, pins, configs)
 └── docs/
-    └── REBRAND.md            # Enterprise white-label and customization guide
+    ├── REBRAND.md            # Enterprise white-label and customization guide
+    └── CLOUD.md              # Cloud image build, test, and upload guide
 ```
 
 ---
@@ -139,6 +153,7 @@ Sai-OS/
 2. Boot target machine in UEFI or BIOS mode.
 3. Select **Install Sai (Install to disk)** to launch directly into the installer, or choose **Start Sai** to evaluate the environment in a live session.
 4. For automated or unattended enterprise deployments, refer to [docs/REBRAND.md](docs/REBRAND.md), Section 7.
+5. For cloud desktops (VDI), build the cloud image instead and follow [docs/CLOUD.md](docs/CLOUD.md).
 
 ---
 

@@ -8,6 +8,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         ca-certificates curl wget file rsync make sudo \
         squashfs-tools xorriso isolinux syslinux-common syslinux-utils \
         locales gnupg unzip xz-utils \
+        qemu-utils dosfstools e2fsprogs fdisk gdisk util-linux \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /sai

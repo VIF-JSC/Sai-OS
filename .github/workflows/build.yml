@@ -1,4 +1,4 @@
-name: Sai ISO
+name: Sai Build
 
 on:
   push:
@@ -27,7 +27,7 @@ jobs:
       - name: shellcheck
         run: |
           sudo apt-get install -y shellcheck
-          shellcheck -S warning -x saibuild builder/*.sh os/provision.d/*.sh \
+          shellcheck -S warning -x saibuild builder/*.sh os/provision.d/*.sh os/cloud/provision.d/*.sh \
             os/rootfs/usr/bin/sai-update os/rootfs/usr/bin/sai-theme-apply \
             os/rootfs/usr/bin/sai-first-run os/rootfs/usr/bin/sai-install-launcher \
             os/rootfs/usr/local/bin/sai-input-setup
@@ -105,3 +105,84 @@ jobs:
         with:
           files: SHA256SUMS
           generate_release_notes: true
+
+  # Cloud VM image. Separate job: the ISO job deletes the rootfs to fit the runner.
+  # Works on /mnt (~70 GB) because rootfs + disk image do not fit on / (~14 GB).
+  # Output is raw (the default format), compressed with zstd: the raw disk is
+  # sparse on disk but would otherwise upload at its full size.
+  # Decompress with: zstd -d Sai-*-cloud-amd64.raw.zst  (restores a sparse file)
+  cloud:
+    name: Build cloud image
+    needs: test
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write   # attach SHA256SUMS.cloud to the Release on tag push
+    env:
+      WORK: /mnt/sai-build
+      OUT_DIR: /mnt/sai-out
+      CLOUD_FORMATS: raw
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install build tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y squashfs-tools xorriso rsync wget isolinux syslinux-utils \
+                                  qemu-utils dosfstools e2fsprogs fdisk gdisk
+          sudo apt-get install -y zstd
+          sudo mkdir -p "$WORK" "$OUT_DIR"
+          sudo chown "$USER" "$OUT_DIR"
+          # Write the image to /mnt as well (the default output is the repo, on /)
+          source builder/env.sh
+          echo "OUT_CLOUD=$OUT_DIR/$OUT_CLOUD" >> "$GITHUB_ENV"
+
+      - name: Cache the base LMDE ISO
+        uses: actions/cache@v4
+        with:
+          path: lmde-*.iso
+          key: lmde-7-cinnamon
+
+      - name: Tag must match SAI_VERSION
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          source builder/env.sh
+          [ "v${SAI_VERSION}" = "${GITHUB_REF_NAME}" ] || {
+            echo "::error::Tag ${GITHUB_REF_NAME} does not match SAI_VERSION=${SAI_VERSION} in builder/env.sh"
+            exit 1
+          }
+
+      - name: Build cloud image
+        run: sudo -E ./saibuild cloud
+
+      - name: Compress raw image (zstd)
+        run: |
+          sudo chown "$USER" "$OUT_DIR"/*.raw
+          ls -lsh "$OUT_DIR"/*.raw
+          zstd -T0 -12 --rm "$OUT_DIR"/*.raw
+          ls -lh "$OUT_DIR"
+
+      - name: Disk usage after build
+        if: always()
+        run: df -h / /mnt
+
+      - name: Checksum
+        working-directory: /mnt/sai-out
+        run: sha256sum Sai-*-cloud-*.raw.zst | tee SHA256SUMS.cloud
+
+      - name: Upload cloud image (artifact, 7 days)
+        uses: actions/upload-artifact@v4
+        with:
+          name: sai-cloud
+          path: |
+            /mnt/sai-out/Sai-*-cloud-*.raw.zst
+            /mnt/sai-out/SHA256SUMS.cloud
+          retention-days: 7
+
+      # Like the ISO, the image itself exceeds the ~2 GB Release asset limit;
+      # only the checksum is attached, the image comes from this run's artifact.
+      - name: GitHub Release (checksum)
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: /mnt/sai-out/SHA256SUMS.cloud

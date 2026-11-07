@@ -5,6 +5,13 @@ brand/tmp/
 build/
 Sai-*.iso
 SHA256SUMS
+SHA256SUMS.cloud
+Sai-*-cloud-*.raw
+Sai-*-cloud-*.raw.zst
+Sai-*-cloud-*.qcow2
+Sai-*-cloud-*.vmdk
+Sai-*-cloud-*.vhd
+Sai-*-cloud-*.gce.tar.gz
 *.log
 
 # Base LMDE ISO (~3 GB, downloaded at build time)

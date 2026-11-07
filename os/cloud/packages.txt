@@ -1,0 +1,28 @@
+# Packages added ONLY to the cloud image (one per line, # starts a comment).
+# Installed by os/cloud/provision.d/20-cloud-packages.sh inside the disk image.
+
+# --- Provisioning: user + SSH key + hostname + network from the cloud metadata ---
+cloud-init
+# growpart: cloud-init extends the root partition + filesystem to the VM disk size
+cloud-guest-utils
+openssh-server
+
+# --- Guest agents: each starts only on its own hypervisor (ConditionVirtualization / udev) ---
+# OpenStack, Proxmox, KVM: shutdown, snapshot freeze, IP reporting
+qemu-guest-agent
+# VMware vSphere / ESXi
+open-vm-tools
+# Azure / Hyper-V: KVP, VSS, file copy
+hyperv-daemons
+
+# --- Bootloader for an installed disk: BIOS + UEFI + Secure Boot ---
+grub2-common
+grub-pc-bin
+grub-efi-amd64-bin
+grub-efi-amd64-signed
+shim-signed
+efibootmgr
+
+# --- Filesystem tools for growpart/resize2fs and first-boot checks ---
+e2fsprogs
+dosfstools

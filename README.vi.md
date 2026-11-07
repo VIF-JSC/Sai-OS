@@ -101,9 +101,20 @@ docker compose run builder
 ./saibuild
 ```
 
+### Bản Cloud Image
+
+Từ cùng rootfs đã provision, có thể xuất ra ổ đĩa máy ảo cho cloud (mặc định định dạng raw), có sẵn cloud-init, tự mở rộng ổ root theo dung lượng máy ảo, driver ảo hóa cho mọi hypervisor phổ biến, guest agent, khởi động BIOS + UEFI, truy cập qua SSH/xrdp:
+
+```bash
+sudo ./saibuild cloud                               # → Sai-<ver>-cloud-amd64.raw
+sudo CLOUD_FORMATS=raw,qcow2,vhd,gce ./saibuild cloud
+```
+
+Xem [docs/CLOUD.md](docs/CLOUD.md) để biết các tùy chọn, cách chạy thử local và lệnh upload lên OpenStack, AWS, Google Cloud, Azure, VMware, Proxmox.
+
 ### Kiểm thử và Tích hợp liên tục (CI)
 
-Mọi pull request và commit đẩy lên nhánh `main` đều tự động chạy kiểm tra cú pháp (`shellcheck` và unittest Python). Khi đẩy lên `main` hoặc tạo thẻ phiên bản (`v*`), hệ thống sẽ đóng gói file ISO hoàn chỉnh và lưu trữ trong 7 ngày trên GitHub Actions; gắn thẻ phiên bản sẽ tự động tạo GitHub Release.
+Mọi pull request và commit đẩy lên nhánh `main` đều tự động chạy kiểm tra cú pháp (`shellcheck` và unittest Python). Khi đẩy lên `main` hoặc tạo thẻ phiên bản (`v*`), hệ thống sẽ đóng gói file ISO hoàn chỉnh cùng bản cloud image (raw, nén zstd thành `.raw.zst`) và lưu trữ trong 7 ngày trên GitHub Actions; gắn thẻ phiên bản sẽ tự động tạo GitHub Release.
 
 ---
 
@@ -117,18 +128,21 @@ Sai-OS/
 │   ├── env.sh                # Tham số cấu hình build
 │   ├── iso.sh                # Thao tác ISO: giải nén, tùy biến bootloader, đóng gói
 │   ├── rootfs.sh             # Thao tác chroot: overlay, cài đặt gói, xác thực
+│   ├── cloud.sh              # Cloud image: phân vùng đĩa, bootloader, xuất định dạng
 │   └── inspect-iso.sh        # Kịch bản kiểm tra nhãn đĩa và bootloader
 ├── os/
 │   ├── apt/packages.txt      # Danh sách gói phần mềm bổ sung cho môi trường văn phòng
 │   ├── rootfs/               # Tệp ghi đè lên hệ thống đích (cấu hình, dịch vụ update)
-│   └── provision.d/          # Các kịch bản provision chạy tuần tự trong chroot (10- đến 90-)
+│   ├── provision.d/          # Các kịch bản provision chạy tuần tự trong chroot (10- đến 90-)
+│   └── cloud/                # Gói, overlay và provision riêng cho bản cloud
 ├── brand/
 │   ├── apply.py              # Kịch bản tự động sinh asset logo, theme, màn hình khởi động
 │   ├── logo/                 # File logo vector gốc
 │   └── Wallpaper 4K/         # Hình nền máy tính thương hiệu
 ├── tests/                    # Bộ kiểm thử hồi quy tĩnh (cú pháp, gschema, cấu hình)
 └── docs/
-    └── REBRAND.md            # Tài liệu hướng dẫn white-label và đổi nhận diện thương hiệu
+    ├── REBRAND.md            # Tài liệu hướng dẫn white-label và đổi nhận diện thương hiệu
+    └── CLOUD.md              # Hướng dẫn build, chạy thử và upload bản cloud
 ```
 
 ---
@@ -139,6 +153,7 @@ Sai-OS/
 2. Khởi động máy trạm ở chế độ UEFI hoặc BIOS.
 3. Chọn **Install Sai (Install to disk)** để vào thẳng trình cài đặt lên ổ cứng, hoặc chọn **Start Sai** để trải nghiệm trước trong phiên Live.
 4. Đối với kế hoạch triển khai hàng loạt tự động, tham khảo [docs/REBRAND.md](docs/REBRAND.md), Mục 7.
+5. Với máy tính để bàn trên cloud (VDI), dùng bản cloud image theo [docs/CLOUD.md](docs/CLOUD.md).
 
 ---
 

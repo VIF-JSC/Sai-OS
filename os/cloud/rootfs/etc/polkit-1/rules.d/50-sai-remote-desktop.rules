@@ -1,0 +1,14 @@
+// Sai cloud image: stop the "Authentication is required to create a color
+// managed device" and refresh-repos prompts that appear in every xrdp session.
+polkit.addRule(function (action, subject) {
+    if ((action.id === "org.freedesktop.color-manager.create-device" ||
+         action.id === "org.freedesktop.color-manager.create-profile" ||
+         action.id === "org.freedesktop.color-manager.delete-device" ||
+         action.id === "org.freedesktop.color-manager.delete-profile" ||
+         action.id === "org.freedesktop.color-manager.modify-device" ||
+         action.id === "org.freedesktop.color-manager.modify-profile" ||
+         action.id === "org.freedesktop.packagekit.system-sources-refresh") &&
+        subject.isInGroup("sudo")) {
+        return polkit.Result.YES;
+    }
+});
