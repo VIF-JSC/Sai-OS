@@ -17,10 +17,6 @@ BASE_ISO_URL="https://mirrors.kernel.org/linuxmint/debian/${BASE_ISO_FILE}"
 # Example for Vietnam: APT_MIRROR=http://mirror.bizflycloud.vn/debian
 APT_MIRROR="${APT_MIRROR:-}"
 
-# --- Optional components ---
-SAI_WPS="${SAI_WPS:-1}"          # 0 = skip WPS Office (keep LMDE's LibreOffice)
-WPS_DEB_URL="${WPS_DEB_URL:-}"   # alternative WPS .deb URL; empty = default in 50-office.sh
-
 # --- Working directories ---
 WORK="${WORK:-./build}"
 ISO_TREE="$WORK/iso-tree"            # ISO contents being edited
@@ -32,6 +28,19 @@ CACHE_ISO="$WORK/.cache/iso-tree"
 OUT_ISO="${OUT_ISO:-Sai-${SAI_VERSION}-amd64.iso}"
 # ISO volume label: ISO 9660 allows only A-Z 0-9 _ (a hyphen triggers warnings)
 ISO_LABEL="SAI"
+
+# --- Cloud image (./saibuild cloud) ---
+# Output base name (relative to the repo, or an absolute path); each format adds
+# its own extension (.raw, .qcow2, ...)
+OUT_CLOUD="${OUT_CLOUD:-Sai-${SAI_VERSION}-cloud-amd64}"
+# Comma-separated: raw (default; AWS snapshot, dd, any qemu-img input),
+# qcow2 (OpenStack/KVM/Proxmox), vmdk (VMware/AWS), vhd (Azure), gce (Google Cloud tar.gz)
+CLOUD_FORMATS="${CLOUD_FORMATS:-raw}"
+CLOUD_DISK_GB="${CLOUD_DISK_GB:-}"   # working disk while building; empty = rootfs size + 25%
+CLOUD_SHRINK="${CLOUD_SHRINK:-1}"    # 1 = final raw disk sized to data + CLOUD_SLACK_MB
+CLOUD_SLACK_MB="${CLOUD_SLACK_MB:-1024}"  # free space left in root before growpart runs
+CLOUD_RDP="${CLOUD_RDP:-1}"          # 1 = xrdp remote desktop on 3389; 0 = SSH only
+CLOUD_USER="${CLOUD_USER:-saiadmin}" # default cloud-init user (password comes from the cloud)
 
 # --- squashfs compression: lz4 is fast for dev, xz is small for release ---
 SQUASH_ARGS=(-comp lz4 -noappend)

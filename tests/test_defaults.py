@@ -11,7 +11,7 @@ ROOT = Path(__file__).parents[1]
 
 PINNED = [
     "firefox.desktop",
-    "wps-office-prometheus.desktop",
+    "libreoffice-writer.desktop",
     "mintinstall.desktop",
     "cinnamon-settings.desktop",
 ]
@@ -45,7 +45,7 @@ class DesktopDefaultsTests(unittest.TestCase):
         if desktop.is_dir():
             leftovers = {p.name for p in desktop.iterdir()} & {
                 "google-chrome.desktop", "zalo.desktop",
-                "wps-office-prometheus.desktop", "mintinstall.desktop"}
+                "libreoffice-writer.desktop", "mintinstall.desktop"}
             self.assertFalse(leftovers)
 
     def test_default_browser_is_firefox(self):

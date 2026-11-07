@@ -154,7 +154,7 @@
     "type": "generic",
     "default": [
       "firefox.desktop",
-      "wps-office-prometheus.desktop",
+      "libreoffice-writer.desktop",
       "mintinstall.desktop",
       "cinnamon-settings.desktop"
     ]

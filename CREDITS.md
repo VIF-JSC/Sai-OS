@@ -14,7 +14,7 @@ its original authors; Sai is not affiliated with any of them.
 | [Be Vietnam Pro](https://github.com/bettergui/BeVietnamPro) | Lam Bao, Tony Le | SIL Open Font License 1.1 |
 | [fcitx5](https://fcitx-im.org/) | Fcitx team | LGPL-2.1 |
 | [Lotus](https://fcitx5-lotus.pages.dev/) — Vietnamese input method for fcitx5 | Lotus authors | As stated in the author's package |
-| [WPS Office for Linux](https://www.wps.com/office/linux/) | Kingsoft | Kingsoft EULA, closed-source freeware |
+| [LibreOffice](https://www.libreoffice.org/) (shipped by LMDE) | The Document Foundation | MPL-2.0 |
 | [Flameshot](https://flameshot.org/), [CopyQ](https://hluk.github.io/CopyQ/), [TLP](https://linrunner.de/tlp/), [zram-generator](https://github.com/systemd/zram-generator) | Respective authors | GPL-3.0 / GPL-3.0 / GPL-2.0 / MIT |
 
 The full license text of every package in the ISO is at `/usr/share/doc/<package>/copyright`.

@@ -27,5 +27,5 @@ visible location; technical identifiers (`ID_LIKE`, the `/etc/linuxmint/info` pa
 `mint*` package names) are kept because system tools depend on them. The copyright
 notices of every package remain untouched at `/usr/share/doc/<package>/copyright`.
 
-Other third-party components (theme, icons, cursor, font, input method, WPS Office)
+Other third-party components (theme, icons, cursor, font, input method)
 keep their original licenses; see [CREDITS.md](CREDITS.md).

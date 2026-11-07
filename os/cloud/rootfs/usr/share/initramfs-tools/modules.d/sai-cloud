@@ -1,0 +1,29 @@
+# Sai cloud image: disk + NIC drivers forced into the initramfs, per platform.
+# All ship in the stock Debian kernel; listing them guarantees the root disk is
+# found at boot regardless of MODULES= policy.
+
+# KVM / OpenStack / Proxmox / GCP (virtio)
+virtio_pci
+virtio_blk
+virtio_scsi
+virtio_net
+virtio_console
+# AWS Nitro (NVMe disk + ENA network), GCP NVMe
+nvme
+ena
+# Google Cloud gVNIC
+gve
+# Azure / Hyper-V
+hv_vmbus
+hv_storvsc
+hv_netvsc
+hv_utils
+# VMware
+vmw_pvscsi
+vmxnet3
+# Xen (older AWS instance types)
+xen_blkfront
+xen_netfront
+# Common emulated controllers
+ahci
+sd_mod

@@ -23,7 +23,7 @@ Sai shifts the operating system paradigm from vendor-dictated cloud ecosystems t
 
 ### 3. Purpose-Built for Organizations *(Cho tổ chức / doanh nghiệp của bạn)*
 - **Frictionless Windows-to-Linux Transition**: Features a familiar Cinnamon desktop layout (traditional bottom taskbar, Cinnamenu start menu, and Windows-standard shortcuts such as `Super+E` for File Explorer, `Ctrl+Shift+Esc` for System Monitor, and `Super+Shift+S` / `PrtSc` for screenshots), minimizing staff retraining time and operational downtime.
-- **Turnkey Office Readiness**: Pre-configured with the `vi_VN` locale, Asia/Ho_Chi_Minh timezone, modern `Be Vietnam Pro` typography, and the `fcitx5` + `Lotus` input engine (Telex enabled out of the box). Bundled with office productivity tools (WPS Office / LibreOffice), document templates (`New Document` context menu), browser (Firefox), screenshot utility (Flameshot), and clipboard history (CopyQ).
+- **Turnkey Office Readiness**: Pre-configured with the `vi_VN` locale, Asia/Ho_Chi_Minh timezone, modern `Be Vietnam Pro` typography, and the `fcitx5` + `Lotus` input engine (Telex enabled out of the box). Bundled with the LibreOffice productivity suite, document templates (`New Document` context menu), browser (Firefox), screenshot utility (Flameshot), and clipboard history (CopyQ).
 - **Enterprise-Grade Manageability & Rollback Safety**:
   - Automated maintenance via `sai-update` running on a quiet systemd timer.
   - **Automated Timeshift snapshot creation** before every system upgrade, providing instantaneous, one-click rollback if an update causes regressions.
@@ -40,7 +40,7 @@ Sai shifts the operating system paradigm from vendor-dictated cloud ecosystems t
 |---|---|
 | **Desktop Experience** | Windows-like Cinnamon desktop, Cinnamenu application launcher, traditional taskbar, Win11-style icons, Bibata cursor, Cinnamon Delight theme. |
 | **Localization & Fonts** | Generated `vi_VN` locale, `Asia/Ho_Chi_Minh` timezone, `Be Vietnam Pro` corporate typography, `fcitx5` + `Lotus` input method (Telex toggle via `` ` `` key). English UI by default (switch to Tiếng Việt anytime in Settings → Languages). |
-| **Productivity Suite** | WPS Office (optional, full Word/Excel/PowerPoint compatibility) or LibreOffice, Firefox, Flameshot, CopyQ clipboard manager, System Monitor, right-click "New Document" templates (`etc/skel/Templates`). |
+| **Productivity Suite** | LibreOffice (opens and saves Word/Excel/PowerPoint formats), Firefox, Flameshot, CopyQ clipboard manager, System Monitor, right-click "New Document" templates (`etc/skel/Templates`). |
 | **Fleet Operations** | `sai-update` orchestrated maintenance, automatic Timeshift snapshot before upgrades for instant rollback, run-once sequential migrations. |
 | **Security & Privacy** | `ufw` firewall enabled with inbound traffic blocked, 5-minute screen lock policy, telemetry stripped/disabled, unprivileged user environment. |
 | **Post-Quantum Cryptography** | NIST ML-KEM (FIPS 203) hybrid key exchange for TLS, Firefox and SSH, enforced at build time; ML-DSA (FIPS 204) document signing from the file manager, internal PQ certificate authority and release signatures; daily compliance check (`/var/lib/sai/pqc-status.json`); `sai-pqc` tool and menu entry. |
@@ -89,8 +89,6 @@ Custom parameters can be configured via environment variables (defaults in `buil
 | Variable | Description | Default |
 |---|---|---|
 | `SAI_VERSION` | Version string embedded in ISO name, `/etc/os-release`, and boot menu | `0.1.0` |
-| `SAI_WPS=0` | Omit WPS Office and retain LMDE's LibreOffice package | `1` |
-| `WPS_DEB_URL` | Custom download URL for WPS Office `.deb` package | Upstream build URL |
 | `APT_MIRROR` | Nearby Debian mirror to accelerate package downloads | `http://deb.debian.org/debian` |
 
 ### Docker & macOS Support
@@ -103,9 +101,20 @@ docker compose run builder
 ./saibuild
 ```
 
+### Cloud Image
+
+The same provisioned rootfs can also be exported as a cloud VM disk (raw by default) with cloud-init, automatic root-disk growth, paravirtual drivers for every major hypervisor, guest agents, BIOS + UEFI boot, and SSH/xrdp remote access:
+
+```bash
+sudo ./saibuild cloud                               # → Sai-<ver>-cloud-amd64.raw
+sudo CLOUD_FORMATS=raw,qcow2,vhd,gce ./saibuild cloud
+```
+
+See [docs/CLOUD.md](docs/CLOUD.md) for settings, local testing, and upload commands for OpenStack, AWS, Google Cloud, Azure, VMware, and Proxmox.
+
 ### Continuous Integration (CI)
 
-Every pull request and commit to `main` runs automated static checks (`shellcheck` and Python unit tests). Pushes to `main` or version tags (`v*`) build the production ISO, upload it as a 7-day workflow artifact, and publish GitHub Releases on tags.
+Every pull request and commit to `main` runs automated static checks (`shellcheck` and Python unit tests). Pushes to `main` or version tags (`v*`) build the production ISO and the cloud image (raw, zstd-compressed as `.raw.zst`), upload them as 7-day workflow artifacts, and publish GitHub Releases on tags.
 
 ---
 
@@ -119,18 +128,21 @@ Sai-OS/
 │   ├── env.sh                # Build parameters and default configuration
 │   ├── iso.sh                # ISO tree operations: extract, brand bootloader, pack
 │   ├── rootfs.sh             # Chroot operations: overlay, package install, validation
+│   ├── cloud.sh              # Cloud image: disk layout, bootloader, export formats
 │   └── inspect-iso.sh        # Bootloader and ISO artifact verification script
 ├── os/
 │   ├── apt/packages.txt      # Enterprise and office packages added to base LMDE
 │   ├── rootfs/               # Files overlaid on target filesystem (configs, updates)
-│   └── provision.d/          # Ordered chroot provisioning scripts (10- to 90-)
+│   ├── provision.d/          # Ordered chroot provisioning scripts (10- to 90-)
+│   └── cloud/                # Cloud-only packages, overlay, and provisioning
 ├── brand/
 │   ├── apply.py              # Generation script for logos, themes, and splash art
 │   ├── logo/                 # Vector brand assets
 │   └── Wallpaper 4K/         # Branded desktop backgrounds
 ├── tests/                    # Automated regression tests (syntax, pins, configs)
 └── docs/
-    └── REBRAND.md            # Enterprise white-label and customization guide
+    ├── REBRAND.md            # Enterprise white-label and customization guide
+    └── CLOUD.md              # Cloud image build, test, and upload guide
 ```
 
 ---
@@ -141,6 +153,7 @@ Sai-OS/
 2. Boot target machine in UEFI or BIOS mode.
 3. Select **Install Sai (Install to disk)** to launch directly into the installer, or choose **Start Sai** to evaluate the environment in a live session.
 4. For automated or unattended enterprise deployments, refer to [docs/REBRAND.md](docs/REBRAND.md), Section 7.
+5. For cloud desktops (VDI), build the cloud image instead and follow [docs/CLOUD.md](docs/CLOUD.md).
 
 ---
 
@@ -170,7 +183,6 @@ To deploy Sai under your organization's own corporate identity, consult [docs/RE
 - **Build Orchestration & Configuration Code**: Released under **GPL-3.0-or-later** ([LICENSE](LICENSE)).
 - **Sai Brand Assets & Trademarks**: All rights reserved ([LICENSE-BRAND.md](LICENSE-BRAND.md)).
 - **Upstream Operating System & Packages**: The resulting ISO contains Debian, LMDE, and open-source packages governed by their respective upstream licenses (accessible inside the system at `/usr/share/doc/<package>/copyright`).
-- **WPS Office (Optional)**: Freeware distributed by Kingsoft, downloaded unmodified at build time under Kingsoft's End User License Agreement. See [CREDITS.md](CREDITS.md).
 
 *Sai is an independent project and is not affiliated with, sponsored by, or endorsed by Linux Mint, Debian, or Canonical.*
 

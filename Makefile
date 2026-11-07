@@ -1,12 +1,15 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # Sai — shortcuts for ./saibuild. Pass ISO=/path/to/lmde.iso if you already have it.
-.PHONY: iso release quick unpack provision overlay pack shell inspect test clean clean-all help
+.PHONY: iso release cloud quick unpack provision overlay pack shell inspect test clean clean-all help
 
 iso:            ## Dev build (lz4, fast)
 	sudo ./saibuild all $(ISO)
 
 release:        ## Release build (xz, smaller ISO)
 	sudo ./saibuild all --release $(ISO)
+
+cloud:          ## Cloud VM image (raw; CLOUD_FORMATS=raw,qcow2,vmdk,vhd,gce)
+	sudo CLOUD_FORMATS=$(or $(CLOUD_FORMATS),raw) ./saibuild cloud $(ISO)
 
 quick:          ## Validated rootfs → overlay + repack only
 	sudo ./saibuild quick $(ISO)
@@ -30,7 +33,7 @@ inspect:        ## Check the boot branding of the ISO/workspace
 	bash builder/inspect-iso.sh $(ISO)
 
 test:           ## Static tests: shellcheck (if installed) + unittest, no build needed
-	@command -v shellcheck >/dev/null && shellcheck -S warning -x saibuild builder/*.sh os/provision.d/*.sh \
+	@command -v shellcheck >/dev/null && shellcheck -S warning -x saibuild builder/*.sh os/provision.d/*.sh os/cloud/provision.d/*.sh \
 	    os/rootfs/usr/bin/sai-* os/rootfs/usr/local/bin/sai-* || echo "(shellcheck not installed, skipped)"
 	python3 -m unittest discover -s tests -v
 

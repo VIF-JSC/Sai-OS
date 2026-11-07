@@ -1,0 +1,3 @@
+# Sai cloud image: keep every storage/network driver in the initramfs so the same
+# image boots on any hypervisor (the disk controller differs per cloud).
+MODULES=most

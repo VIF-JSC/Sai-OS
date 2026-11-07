@@ -12,6 +12,7 @@ SCRIPTS = (
     [ROOT / "saibuild"]
     + sorted((ROOT / "builder").glob("*.sh"))
     + sorted((ROOT / "os/provision.d").glob("*.sh"))
+    + sorted((ROOT / "os/cloud/provision.d").glob("*.sh"))
     + [ROOT / "os/rootfs/usr/bin/sai-update",
        ROOT / "os/rootfs/usr/bin/sai-theme-apply",
        ROOT / "os/rootfs/usr/local/bin/sai-input-setup",
