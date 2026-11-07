@@ -17,10 +17,6 @@ BASE_ISO_URL="https://mirrors.kernel.org/linuxmint/debian/${BASE_ISO_FILE}"
 # Example for Vietnam: APT_MIRROR=http://mirror.bizflycloud.vn/debian
 APT_MIRROR="${APT_MIRROR:-}"
 
-# --- Optional components ---
-SAI_WPS="${SAI_WPS:-1}"          # 0 = skip WPS Office (keep LMDE's LibreOffice)
-WPS_DEB_URL="${WPS_DEB_URL:-}"   # alternative WPS .deb URL; empty = default in 50-office.sh
-
 # --- Working directories ---
 WORK="${WORK:-./build}"
 ISO_TREE="$WORK/iso-tree"            # ISO contents being edited

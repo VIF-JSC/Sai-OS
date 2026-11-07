@@ -73,8 +73,6 @@ rootfs_run_provisioners() {
         chroot "$ROOTFS" /usr/bin/env \
             SAI_NAME="$SAI_NAME" \
             SAI_VERSION="$SAI_VERSION" \
-            SAI_WPS="${SAI_WPS:-1}" \
-            WPS_DEB_URL="${WPS_DEB_URL:-}" \
             BASE_VERSION="$BASE_VERSION" \
             BASE_EDITION="$BASE_EDITION" \
             /bin/bash "/tmp/$name"
@@ -105,11 +103,9 @@ rootfs_validate() {
         test -d /etc/skel/Templates
         grep -q "^ENABLED=yes" /etc/ufw/ufw.conf
         command -v fcitx5 >/dev/null
+        test -f /usr/share/applications/libreoffice-writer.desktop
         date -u +%Y-%m-%dT%H:%M:%SZ > /etc/sai-release-stamp
     '
-    # WPS is downloaded from an external CDN; if missing, warn but do not fail the build
-    run_in_rootfs 'test -d /opt/kingsoft/wps-office' || \
-        note "WPS Office is not in the rootfs (download failed or SAI_WPS=0) — the ISO ships without it."
 }
 
 rootfs_is_validated() { [ -f "$ROOTFS/etc/sai-release-stamp" ]; }

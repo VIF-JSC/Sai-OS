@@ -47,7 +47,7 @@ Also: the ISO file `Sai-<version>-amd64.iso` and the volume label `SAI` (A-Z0-9_
 | Live hostname/user | `hostname=sai username=sai` in `builder/iso.sh`; `echo sai > /etc/hostname` in `10-identity.sh` |
 | Install mode | The `sai.install=1` token in `builder/iso.sh` + `os/rootfs/usr/bin/sai-install-launcher` |
 | Brand assets | `brand/Sai_logo*`, `brand/Wallpaper 4K/sai_*.png` |
-| Environment variables | The `SAI_` prefix (`SAI_NAME`, `SAI_VERSION`, `SAI_WPS`) in the builder, passed into provisioning by rootfs.sh |
+| Environment variables | The `SAI_` prefix (`SAI_NAME`, `SAI_VERSION`) in the builder, passed into provisioning by rootfs.sh |
 
 ## 3. Logo and colors — one source
 

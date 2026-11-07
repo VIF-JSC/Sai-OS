@@ -42,7 +42,7 @@ theme='Cinnamon-Delight'
 
 # Apps pinned to the taskbar
 [org/cinnamon/applets/grouped-window-list]
-pinned-apps=['firefox.desktop','wps-office-prometheus.desktop','mintinstall.desktop','cinnamon-settings.desktop']
+pinned-apps=['firefox.desktop','libreoffice-writer.desktop','mintinstall.desktop','cinnamon-settings.desktop']
 title-display=1
 number-display=false
 group-apps=true

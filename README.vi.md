@@ -23,7 +23,7 @@ Sai dịch chuyển hoàn toàn khỏi mô hình hệ điều hành phụ thuộ
 
 ### 3. Cho tổ chức / doanh nghiệp của bạn (Enterprise-Grade & User-Centric)
 - **Chuyển đổi êm thuận từ Windows**: Giao diện Cinnamon quen thuộc (thanh tác vụ phía dưới, menu khởi động Cinnamenu, các phím tắt tiêu chuẩn như `Super+E` mở File Explorer, `Ctrl+Shift+Esc` mở System Monitor, `Super+Shift+S` / `PrtSc` chụp ảnh màn hình), giảm thiểu tối đa chi phí đào tạo lại nhân sự và gián đoạn công việc.
-- **Sẵn sàng cho công việc văn phòng ngay sau khi cài**: Cấu hình sẵn locale `vi_VN`, múi giờ Việt Nam, bộ font chữ hiện đại `Be Vietnam Pro` chuẩn hiển thị văn bản hành chính, bộ gõ `fcitx5` + `Lotus` (bật sẵn Telex, phím tắt chuyển đổi `` ` ``). Cài sẵn bộ công cụ văn phòng (WPS Office hoặc LibreOffice), mẫu văn bản tạo nhanh chuột phải (`New Document`), trình duyệt Firefox, ứng dụng chụp màn hình Flameshot, quản lý clipboard CopyQ.
+- **Sẵn sàng cho công việc văn phòng ngay sau khi cài**: Cấu hình sẵn locale `vi_VN`, múi giờ Việt Nam, bộ font chữ hiện đại `Be Vietnam Pro` chuẩn hiển thị văn bản hành chính, bộ gõ `fcitx5` + `Lotus` (bật sẵn Telex, phím tắt chuyển đổi `` ` ``). Cài sẵn bộ công cụ văn phòng LibreOffice, mẫu văn bản tạo nhanh chuột phải (`New Document`), trình duyệt Firefox, ứng dụng chụp màn hình Flameshot, quản lý clipboard CopyQ.
 - **Vận hành an toàn & Cơ chế Rollback tức thì**:
   - Tự động bảo trì và kiểm tra cập nhật qua `sai-update` chạy bằng systemd timer.
   - **Tự động tạo snapshot Timeshift trước mỗi lần cập nhật hệ thống**, cho phép khôi phục nguyên trạng hệ điều hành chỉ trong vài phút nếu bản cập nhật gặp sự cố tương thích.
@@ -40,7 +40,7 @@ Sai dịch chuyển hoàn toàn khỏi mô hình hệ điều hành phụ thuộ
 |---|---|
 | **Trải nghiệm giao diện** | Giao diện Cinnamon phong cách Windows, menu Cinnamenu, taskbar quen thuộc, bộ icon Win11, con trỏ Bibata, theme Cinnamon Delight. |
 | **Bản địa hóa & Phông chữ** | Sinh sẵn locale `vi_VN`, múi giờ `Asia/Ho_Chi_Minh`, phông chữ doanh nghiệp `Be Vietnam Pro`, bộ gõ `fcitx5` + `Lotus` (Telex gõ ngay, bật/tắt bằng phím `` ` ``). Giao diện mặc định Tiếng Anh, dễ dàng chuyển sang Tiếng Việt trong Cài đặt → Ngôn ngữ. |
-| **Bộ ứng dụng văn phòng** | WPS Office (tùy chọn, tương thích cao với Word/Excel/PowerPoint) hoặc LibreOffice, Firefox, Flameshot, quản lý clipboard CopyQ, System Monitor, danh mục mẫu văn bản tạo nhanh (`etc/skel/Templates`). |
+| **Bộ ứng dụng văn phòng** | LibreOffice (mở và lưu định dạng Word/Excel/PowerPoint), Firefox, Flameshot, quản lý clipboard CopyQ, System Monitor, danh mục mẫu văn bản tạo nhanh (`etc/skel/Templates`). |
 | **Quản trị vận hành** | Hệ thống cập nhật tập trung `sai-update`, tự động tạo snapshot Timeshift trước khi nâng cấp để rollback an toàn, hệ thống migration tuần tự. |
 | **Bảo mật & Quyền riêng tư** | Bật sẵn tường lửa `ufw` chặn inbound, tự động khóa màn hình 5 phút, vô hiệu hóa telemetry, thiết lập quyền hạn người dùng an toàn. |
 | **Mật mã hậu lượng tử** | Trao đổi khóa lai ML-KEM (NIST FIPS 203) cho TLS, Firefox và SSH, được kiểm tra khi build; ký số tài liệu ML-DSA (FIPS 204) từ trình quản lý tệp, CA nội bộ hậu lượng tử và chữ ký phát hành; kiểm tra tuân thủ hằng ngày (`/var/lib/sai/pqc-status.json`); công cụ `sai-pqc` và mục trong menu. |
@@ -89,8 +89,6 @@ Cấu hình các tham số qua biến môi trường (giá trị mặc định x
 | Biến | Ý nghĩa | Mặc định |
 |---|---|---|
 | `SAI_VERSION` | Phiên bản ghi vào tên ISO, `/etc/os-release` và menu khởi động | `0.1.0` |
-| `SAI_WPS=0` | Bỏ qua WPS Office và giữ nguyên bộ LibreOffice gốc của LMDE | `1` |
-| `WPS_DEB_URL` | Đường dẫn tải gói `.deb` WPS Office tùy chỉnh | URL bản dựng chính thức |
 | `APT_MIRROR` | Địa chỉ Debian mirror gần nhất để tăng tốc độ tải gói | `http://deb.debian.org/debian` |
 
 ### Hỗ trợ Docker & macOS
@@ -170,7 +168,6 @@ Bản phát hành công khai sử dụng các giá trị định danh mẫu đ�
 - **Mã nguồn đóng gói & Kịch bản cấu hình**: Phát hành theo giấy phép **GPL-3.0-or-later** ([LICENSE](LICENSE)).
 - **Tài sản thương hiệu Sai**: Đăng ký và bảo lưu mọi quyền ([LICENSE-BRAND.md](LICENSE-BRAND.md)).
 - **Hệ điều hành thượng nguồn & Các gói phần mềm**: Bản ISO hoàn chỉnh chứa các thành phần từ Debian, LMDE và hàng nghìn phần mềm mã nguồn mở theo giấy phép riêng (có thể tra cứu tại `/usr/share/doc/<package>/copyright` trên máy đã cài).
-- **WPS Office (Tùy chọn)**: Phần mềm đóng gói miễn phí của Kingsoft, được tải về nguyên bản tại thời điểm build theo thỏa thuận cấp phép người dùng cuối (EULA) của Kingsoft. Xem chi tiết tại [CREDITS.md](CREDITS.md).
 
 *Sai là một dự án độc lập, không liên kết, không được tài trợ hoặc bảo trợ bởi Linux Mint, Debian hay Canonical.*
 

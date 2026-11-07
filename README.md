@@ -23,7 +23,7 @@ Sai shifts the operating system paradigm from vendor-dictated cloud ecosystems t
 
 ### 3. Purpose-Built for Organizations *(Cho tổ chức / doanh nghiệp của bạn)*
 - **Frictionless Windows-to-Linux Transition**: Features a familiar Cinnamon desktop layout (traditional bottom taskbar, Cinnamenu start menu, and Windows-standard shortcuts such as `Super+E` for File Explorer, `Ctrl+Shift+Esc` for System Monitor, and `Super+Shift+S` / `PrtSc` for screenshots), minimizing staff retraining time and operational downtime.
-- **Turnkey Office Readiness**: Pre-configured with the `vi_VN` locale, Asia/Ho_Chi_Minh timezone, modern `Be Vietnam Pro` typography, and the `fcitx5` + `Lotus` input engine (Telex enabled out of the box). Bundled with office productivity tools (WPS Office / LibreOffice), document templates (`New Document` context menu), browser (Firefox), screenshot utility (Flameshot), and clipboard history (CopyQ).
+- **Turnkey Office Readiness**: Pre-configured with the `vi_VN` locale, Asia/Ho_Chi_Minh timezone, modern `Be Vietnam Pro` typography, and the `fcitx5` + `Lotus` input engine (Telex enabled out of the box). Bundled with the LibreOffice productivity suite, document templates (`New Document` context menu), browser (Firefox), screenshot utility (Flameshot), and clipboard history (CopyQ).
 - **Enterprise-Grade Manageability & Rollback Safety**:
   - Automated maintenance via `sai-update` running on a quiet systemd timer.
   - **Automated Timeshift snapshot creation** before every system upgrade, providing instantaneous, one-click rollback if an update causes regressions.
@@ -40,7 +40,7 @@ Sai shifts the operating system paradigm from vendor-dictated cloud ecosystems t
 |---|---|
 | **Desktop Experience** | Windows-like Cinnamon desktop, Cinnamenu application launcher, traditional taskbar, Win11-style icons, Bibata cursor, Cinnamon Delight theme. |
 | **Localization & Fonts** | Generated `vi_VN` locale, `Asia/Ho_Chi_Minh` timezone, `Be Vietnam Pro` corporate typography, `fcitx5` + `Lotus` input method (Telex toggle via `` ` `` key). English UI by default (switch to Tiếng Việt anytime in Settings → Languages). |
-| **Productivity Suite** | WPS Office (optional, full Word/Excel/PowerPoint compatibility) or LibreOffice, Firefox, Flameshot, CopyQ clipboard manager, System Monitor, right-click "New Document" templates (`etc/skel/Templates`). |
+| **Productivity Suite** | LibreOffice (opens and saves Word/Excel/PowerPoint formats), Firefox, Flameshot, CopyQ clipboard manager, System Monitor, right-click "New Document" templates (`etc/skel/Templates`). |
 | **Fleet Operations** | `sai-update` orchestrated maintenance, automatic Timeshift snapshot before upgrades for instant rollback, run-once sequential migrations. |
 | **Security & Privacy** | `ufw` firewall enabled with inbound traffic blocked, 5-minute screen lock policy, telemetry stripped/disabled, unprivileged user environment. |
 | **Post-Quantum Cryptography** | NIST ML-KEM (FIPS 203) hybrid key exchange for TLS, Firefox and SSH, enforced at build time; ML-DSA (FIPS 204) document signing from the file manager, internal PQ certificate authority and release signatures; daily compliance check (`/var/lib/sai/pqc-status.json`); `sai-pqc` tool and menu entry. |
@@ -89,8 +89,6 @@ Custom parameters can be configured via environment variables (defaults in `buil
 | Variable | Description | Default |
 |---|---|---|
 | `SAI_VERSION` | Version string embedded in ISO name, `/etc/os-release`, and boot menu | `0.1.0` |
-| `SAI_WPS=0` | Omit WPS Office and retain LMDE's LibreOffice package | `1` |
-| `WPS_DEB_URL` | Custom download URL for WPS Office `.deb` package | Upstream build URL |
 | `APT_MIRROR` | Nearby Debian mirror to accelerate package downloads | `http://deb.debian.org/debian` |
 
 ### Docker & macOS Support
@@ -170,7 +168,6 @@ To deploy Sai under your organization's own corporate identity, consult [docs/RE
 - **Build Orchestration & Configuration Code**: Released under **GPL-3.0-or-later** ([LICENSE](LICENSE)).
 - **Sai Brand Assets & Trademarks**: All rights reserved ([LICENSE-BRAND.md](LICENSE-BRAND.md)).
 - **Upstream Operating System & Packages**: The resulting ISO contains Debian, LMDE, and open-source packages governed by their respective upstream licenses (accessible inside the system at `/usr/share/doc/<package>/copyright`).
-- **WPS Office (Optional)**: Freeware distributed by Kingsoft, downloaded unmodified at build time under Kingsoft's End User License Agreement. See [CREDITS.md](CREDITS.md).
 
 *Sai is an independent project and is not affiliated with, sponsored by, or endorsed by Linux Mint, Debian, or Canonical.*
 
